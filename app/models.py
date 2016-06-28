@@ -11,6 +11,9 @@ class Role(db.Model):
 	name = db.Column(db.String(64), unique=True)
 	users = db.relationship('User', backref='role', lazy='dynamic')
 
+	def __repr__(self):
+		return '<Role {!r}>'.format(self.name)
+
 
 class User(UserMixin, db.Model):
 	__tablename__ = 'users'
@@ -22,7 +25,7 @@ class User(UserMixin, db.Model):
 	confirmed = db.Column(db.Boolean, default=False)
 
 	def __repr__(self):
-		return '<Role %r>' % self.name
+		return '<User {!r}>'.format(self.username)
 
 	@property
 	def password(self):
@@ -34,9 +37,6 @@ class User(UserMixin, db.Model):
 
 	def verify_password(self, password):
 		return check_password_hash(self.password_hash, password)
-
-	def __repr__(self):
-		return '<User %r>' % self.username
 
 	def generate_confirmation_token(self, expiration=3600):
 		s = Serializer(current_app.config['SECRET_KEY'], expiration)

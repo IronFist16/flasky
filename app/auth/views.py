@@ -4,6 +4,7 @@ from . import auth
 from ..models import User
 from .forms import LoginForm, RegistrationForm
 from ..emails import send_email
+from .. import db
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -52,7 +53,7 @@ def confirm(token):
 
 @auth.before_app_request:
 def before_request():
-	if current_user.is_authenticated() and not current_user.confirmed \
+	if current_user.is_authenticated and not current_user.confirmed \
 		and request.endpoint[:5] != 'auth.':
 		return redirect(url_for('auth.unconfirmed'))
 
@@ -62,12 +63,11 @@ def unconfirmed():
 		return redirect('main.index')
 	return render_template('auth/unconfirmed.html')
 
-@auth.route('confirm')
+@auth.route('/confirm')
 @login_required
 def resend_confirmation():
-	token = current_user.generate_confirmation_token()
-	send_email('auth/email/confirm',
-				'Confirm Your Account',
-				user, token=token)
+	toke = current_user.generate_confirmation_token()
+	send_email(user.email, 'Confirm your account',
+		'auth/email/confirm', user=user, token=token)
 	flash('A new confirmation email has been sent to you by email.')
 	return redirect(url_for('main.index'))
