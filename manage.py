@@ -21,7 +21,7 @@ manager.add_command('shell', Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
 
-@manager.command
+@manager.add_command
 def test():
 	"""Run the unit tests."""
 	import unittest
