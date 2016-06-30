@@ -37,7 +37,7 @@ class ChangePasswordForm(Form):
 	password2 = PasswordField('Confirm new password', validators=[Required()])
 	submit = SubmitField('Update Password')
 
-class PasswordResetRequestForl(Form):
+class PasswordResetRequestForm(Form):
 	email = StringField('Email', validators=[Required(),
 		Length(1,64), Email()])
 	submit = SubmitField('Reset Password')
@@ -54,3 +54,14 @@ class PasswordResetForm(Form):
 		if User.query.filter_by(email=field.data).first() is None:
 			raise ValidationError('Unknow Email address')
 
+
+class ChangeEmailForm(Form):
+	email = StringField('Email', validators=[Required(), Length(1, 64),
+			Email()])
+	password = PasswordField('New password', validators=[
+		Required(), EqualTo('password2', message='Passwords must match!')])
+	submit = SubmitField('Update Email Address')
+
+	def validate_email(seld, field):
+		if User.query.filter_by(email=field.data).first():
+			raise ValidationError('Email already registered.')
